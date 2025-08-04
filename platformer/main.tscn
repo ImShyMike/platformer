@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=4 uid="uid://p752moqnqbu0"]
+[gd_scene load_steps=9 format=4 uid="uid://p752moqnqbu0"]
 
 [ext_resource type="Texture2D" uid="uid://dkfb2mr410v5v" path="res://icon.svg" id="1_ig7tw"]
 [ext_resource type="Texture2D" uid="uid://cvjifrpw8fxfg" path="res://tile.png" id="2_0xm2m"]
+[ext_resource type="Script" uid="uid://b0ehyxqyexnhb" path="res://animatable_body_2d.gd" id="3_h2yge"]
 
 [sub_resource type="GDScript" id="GDScript_0xm2m"]
 script/source = "extends CharacterBody2D
@@ -61,7 +62,9 @@ func _physics_process(delta: float) -> void:
 		if direction:
 				velocity.x = direction * SPEED
 		else:
-			velocity.x = move_toward(velocity.x, 0, 16)
+			velocity.x = move_toward(velocity.x, 0, 32)
+	elif walljump_buffer < 0.1:
+		velocity.x = move_toward(velocity.x, 0, 32)
 	
 	move_and_slide()
 	
@@ -1649,6 +1652,9 @@ texture = ExtResource("2_0xm2m")
 physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_h2yge")
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_h2yge"]
+size = Vector2(197, 20)
+
 [node name="Node" type="Node"]
 
 [node name="Player" type="CharacterBody2D" parent="."]
@@ -1686,3 +1692,15 @@ position = Vector2(192.889, 1126.22)
 scale = Vector2(4, 4)
 tile_map_data = PackedByteArray("AAAAAAkAAAAJAAwAAAABAAkAAAAJAAwAAAACAAkAAAAJAAwAAAADAAkAAAAJAAwAAAAEAAkAAAAJAAwAAAAFAAkAAAAJAAwAAAAGAAkAAAAJAAwAAAAHAAkAAAAJAAwAAAAIAAkAAAAJAAwAAAAJAAkAAAAJAAwAAAAKAAkAAAAJAAwAAAALAAcAAAAJAAwAAAALAAgAAAAJAAwAAAALAAkAAAAJAAwAAAAMAAcAAAAJAAwAAAANAAcAAAAJAAwAAAAOAAcAAAAJAAwAAAAPAAcAAAAJAAwAAAAQAAcAAAAJAAwAAAARAAcAAAAJAAwAAAAIAAsAAAAJAAwAAAAJAAsAAAAJAAwAAAAKAAsAAAAJAAwAAAALAAsAAAAJAAwAAAAMAAsAAAAJAAwAAAANAAsAAAAJAAwAAAANAAoAAAAJAAwAAAANAAkAAAAJAAwAAAAOAAkAAAAJAAwAAAAPAAkAAAAJAAwAAAAQAAkAAAAJAAwAAAAQAAsAAAAJAAwAAAARAAsAAAAJAAwAAAASAAsAAAAJAAwAAAATAAsAAAAJAAwAAAAUAAsAAAAJAAwAAAATAAkAAAAJAAwAAAAUAAcAAAAJAAwAAAAUAAgAAAAJAAwAAAAUAAkAAAAJAAwAAAAUAAoAAAAJAAwAAAAUAAYAAAAJAAwAAAAUAAUAAAAJAAwAAAAVAAUAAAAJAAwAAAAWAAUAAAAJAAwAAAAXAAUAAAAJAAwAAAAYAAUAAAAJAAwAAAAZAAUAAAAJAAwAAAAaAAcAAAAJAAwAAAAZAAkAAAAJAAwAAAAXAAsAAAAJAAwAAAAWAA0AAAAJAAwAAAAVAA4AAAAJAAwAAAAUAA4AAAAJAAwAAAATAA4AAAAJAAwAAAASAA4AAAAJAAwAAAARAA4AAAAJAAwAAAAQAA4AAAAJAAwAAAAPAA4AAAAJAAwAAAAOAA4AAAAJAAwAAAANAA4AAAAJAAwAAAAMAA4AAAAJAAwAAAALAA4AAAAJAAwAAAAKAA4AAAAJAAwAAAAJAA4AAAAJAAwAAAAIAA4AAAAJAAwAAAAHAA4AAAAJAAwAAAAGAA4AAAAJAAwAAAAFAA4AAAAJAAwAAAAEAA4AAAAJAAwAAAADAA4AAAAJAAwAAAACAA4AAAAJAAwAAAABAA4AAAAJAAwAAAAAAA4AAAAJAAwAAAAXAAwAAAAJAAwAAAAYAAoAAAAJAAwAAAAaAAgAAAAJAAwAAAAbAAYAAAAJAAwAAAAbAAUAAAAJAAwAAAAbAAQAAAAJAAwAAAAbAAMAAAAJAAwAAAAbAAIAAAAJAAwAAAD//w4AAAAJAAwAAAD//w0AAAAJAAwAAAD//wwAAAAJAAwAAAD//wsAAAAJAAwAAAD//woAAAAJAAwAAAD//wkAAAAJAAwAAAD//wgAAAAJAAwAAAD//wcAAAAJAAwAAAD//wYAAAAJAAwAAAD//wUAAAAJAAwAAAD//wQAAAAJAAwAAAD//wMAAAAJAAwAAAD//wIAAAAJAAwAAAD//wEAAAAJAAwAAAAbAAEAAAAJAAwAAAAFAA0AAAAJAAwAAAAGAA0AAAAJAAwAAAA=")
 tile_set = SubResource("TileSet_1bvp3")
+
+[node name="Moving Platform" type="AnimatableBody2D" parent="."]
+script = ExtResource("3_h2yge")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Moving Platform"]
+position = Vector2(247.5, 545)
+shape = SubResource("RectangleShape2D_h2yge")
+
+[node name="Icon" type="Sprite2D" parent="Moving Platform"]
+position = Vector2(247.5, 545)
+scale = Vector2(1.53906, 0.15625)
+texture = ExtResource("1_ig7tw")
