@@ -1695,10 +1695,10 @@ tile_set = SubResource("TileSet_1bvp3")
 script = ExtResource("3_h2yge")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Moving Platform"]
-position = Vector2(247.5, 545)
+position = Vector2(1928.5, 76)
 shape = SubResource("RectangleShape2D_h2yge")
 
 [node name="Icon" type="Sprite2D" parent="Moving Platform"]
-position = Vector2(247.5, 545)
+position = Vector2(1928.5, 76)
 scale = Vector2(1.53906, 0.15625)
 texture = ExtResource("1_ig7tw")

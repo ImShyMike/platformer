@@ -1,5 +1,5 @@
 extends AnimatableBody2D
-@export var move_distance = Vector2(200, 0)
+@export var move_distance = Vector2(500, 0)
 @export var move_duration = 2.0
 var start_position: Vector2
 var tween: Tween
