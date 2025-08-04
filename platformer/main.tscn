@@ -57,11 +57,11 @@ func _physics_process(delta: float) -> void:
 			velocity.y = JUMP_VELOCITY
 
 	# Handle movement
-	if direction:
-		if walljump_buffer <= 0.0 or direction == get_wall_normal().x:
-			velocity.x = direction * SPEED
-	else:
-		velocity.x = move_toward(velocity.x, 0, 16)
+	if walljump_buffer <= 0.0 or direction == get_wall_normal().x:
+		if direction:
+				velocity.x = direction * SPEED
+		else:
+			velocity.x = move_toward(velocity.x, 0, 16)
 	
 	move_and_slide()
 	
