@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=4 uid="uid://p752moqnqbu0"]
+[gd_scene load_steps=8 format=4 uid="uid://p752moqnqbu0"]
 
 [ext_resource type="Texture2D" uid="uid://dkfb2mr410v5v" path="res://icon.svg" id="1_ig7tw"]
 [ext_resource type="Texture2D" uid="uid://cvjifrpw8fxfg" path="res://tile.png" id="2_0xm2m"]
@@ -6,6 +6,8 @@
 [sub_resource type="GDScript" id="GDScript_0xm2m"]
 script/source = "extends CharacterBody2D
 
+@onready var velocity_label = $Camera2D/VelocityLabel
+@onready var velocity_line = $Camera2D/Line2D
 
 const SPEED = 400.0
 const JUMP_VELOCITY = -550.0
@@ -15,6 +17,14 @@ const WALLJUMP_BUFFER_TIME = 0.2 # 200ms
 var coyote_time := 0.15  # 150ms
 var coyote_timer := 0.0
 var walljump_buffer := 0.0
+
+func _ready():
+	# Set up the line appearance
+	velocity_line.width = 3.0
+	velocity_line.default_color = Color.RED
+	velocity_line.add_point(Vector2.ZERO)
+	velocity_line.add_point(Vector2.ZERO)
+	velocity_line.add_point(Vector2.ZERO)
 
 func _physics_process(delta: float) -> void:
 	# Update coyote timer
@@ -27,11 +37,13 @@ func _physics_process(delta: float) -> void:
 	
 	# Add the gravity.
 	if not is_on_floor():
-		velocity += get_gravity() * delta
-
+		if is_on_wall() and velocity.y > 0:
+			velocity += get_gravity() * delta * 0.25 # Wall drag
+		else:
+			velocity += get_gravity() * delta
+	
 	var direction := Input.get_axis(\"left\", \"right\")
-	var jumped := false
-
+	
 	# Handle jumps and walljumps
 	if Input.is_action_pressed(\"jump\"):
 		if is_on_wall() and Input.is_action_just_pressed(\"jump\"):
@@ -48,14 +60,23 @@ func _physics_process(delta: float) -> void:
 	if direction:
 		if walljump_buffer <= 0.0 or direction == get_wall_normal().x:
 			velocity.x = direction * SPEED
+			velocity.x += 50
 	else:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
-
+	
 	move_and_slide()
+	
+	velocity_line.set_point_position(0, velocity * 0.5 * Vector2.RIGHT)
+	velocity_line.set_point_position(2, velocity * 0.5 * Vector2.DOWN)
+	
+	velocity_label.text = \"Velocity: X=%.1f, Y=%.1f\" % [velocity.x, velocity.y]
 "
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ig7tw"]
 size = Vector2(128, 128)
+
+[sub_resource type="Theme" id="Theme_1bvp3"]
+default_font_size = 40
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_h2yge"]
 texture = ExtResource("2_0xm2m")
@@ -1639,16 +1660,27 @@ scale = Vector2(0.45, 0.45)
 script = SubResource("GDScript_0xm2m")
 
 [node name="Sprite2D" type="Sprite2D" parent="Player"]
-position = Vector2(125, 465)
+position = Vector2(192.889, 1126.22)
 texture = ExtResource("1_ig7tw")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
-position = Vector2(125, 465)
+position = Vector2(192.889, 1126.22)
 shape = SubResource("RectangleShape2D_ig7tw")
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
-position = Vector2(125, 465)
+position = Vector2(192.889, 1126.22)
 position_smoothing_speed = 8.0
+
+[node name="VelocityLabel" type="RichTextLabel" parent="Player/Camera2D"]
+z_index = 100
+offset_left = -1214.0
+offset_top = -658.0
+offset_right = -541.0
+offset_bottom = -507.0
+theme = SubResource("Theme_1bvp3")
+metadata/_edit_use_anchors_ = true
+
+[node name="Line2D" type="Line2D" parent="Player/Camera2D"]
 
 [node name="TileMapLayer" type="TileMapLayer" parent="."]
 scale = Vector2(4, 4)
