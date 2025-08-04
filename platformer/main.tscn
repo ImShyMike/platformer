@@ -14,6 +14,7 @@ const SPEED = 400.0
 const JUMP_VELOCITY = -550.0
 const WALLJUMP_HORIZONTAL = 300.0
 const WALLJUMP_BUFFER_TIME = 0.2 # 200ms
+const WALL_DRAG = 0.25
 
 var coyote_time := 0.15  # 150ms
 var coyote_timer := 0.0
@@ -39,7 +40,7 @@ func _physics_process(delta: float) -> void:
 	# Add the gravity.
 	if not is_on_floor():
 		if is_on_wall() and velocity.y > 0:
-			velocity += get_gravity() * delta * 0.25 # Wall drag
+			velocity += get_gravity() * delta * WALL_DRAG
 		else:
 			velocity += get_gravity() * delta
 	
@@ -59,10 +60,7 @@ func _physics_process(delta: float) -> void:
 
 	# Handle movement
 	if walljump_buffer <= 0.0 or direction == get_wall_normal().x:
-		if direction:
-				velocity.x = direction * SPEED
-		else:
-			velocity.x = move_toward(velocity.x, 0, 32)
+		velocity.x = (direction * SPEED) if direction != 0 else move_toward(velocity.x, 0, 32)
 	elif walljump_buffer < 0.1:
 		velocity.x = move_toward(velocity.x, 0, 32)
 	
